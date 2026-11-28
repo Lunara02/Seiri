@@ -1,0 +1,809 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0f1115">
+<title>Seiri</title>
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Seiri">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="seiri.css">
+</head>
+<body class="bg-glow neon-borders holo-sheen" data-tab="home">
+
+<div class="app">
+<aside class="side">
+  <div class="brand"><img class="brand-mark" src="icons/icon-256.png" alt="" width="30" height="30"><span class="brand-name">Seiri</span></div>
+  <nav class="nav" id="tabs" aria-label="Navegación principal">
+    <button type="button" class="tab-btn active" data-tab="home"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span>Inicio</span></button>
+    <button type="button" class="tab-btn" data-tab="lib"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Biblioteca</span><em class="count" id="navCountLib"></em></button>
+    <button type="button" class="tab-btn" data-tab="series"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h6"/><path d="M17 15l3 3-3 3"/></svg><span>Series</span><em class="count" id="navCountSeries"></em></button>
+    <button type="button" class="tab-btn" data-tab="photos"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M4 18l5-5 4 4 3-3 4 4"/></svg><span>Fotos</span></button>
+    <button type="button" class="tab-btn" data-tab="friends"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 5.5a3 3 0 0 1 0 5.5M18 14.5c1.7.8 3 2.6 3 5.5"/></svg><span>Amigos</span><em class="count" id="navCountFriends"></em></button>
+    <div class="nav-sep"></div>
+    <button type="button" class="tab-btn" data-tab="settings"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg><span>Ajustes</span></button>
+  </nav>
+  <div class="side-foot" id="sideFoot"></div>
+  <div class="side-resize" id="sideResize" role="separator" aria-orientation="vertical" aria-label="Ancho de la barra lateral" title="Arrastra para cambiar el ancho (doble clic: restablecer)" tabindex="0"></div>
+</aside>
+
+<div class="main">
+<header class="top">
+  <h1 id="viewTitle">Inicio</h1>
+  <span id="saveStatus" class="save-status hidden" hidden aria-live="polite"></span>
+  <div class="undo-group">
+    <button type="button" class="btn ghost icon-btn" id="btnUndo" title="Deshacer el último cambio (Ctrl+Z)" aria-label="Deshacer" disabled><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button>
+    <button type="button" class="btn ghost icon-btn" id="btnRedo" title="Rehacer el cambio (Ctrl+Y)" aria-label="Rehacer" disabled><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg></button>
+  </div>
+  <button type="button" class="profile" id="btnProfile" title="Cambiar de perfil: cada perfil es una colección distinta (otro servidor u otra cuenta de Mudae)">
+    <span class="av" id="profileAv">P</span>
+    <span class="nm"><b id="profileName">Principal</b><span id="profileSub">Perfil</span></span>
+    <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+  </button>
+  <button type="button" class="btn primary" id="btnOpenImport" title="Pega aquí la lista de tu harem copiada de Discord"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11"/><path d="M7 11l5 5 5-5"/><path d="M5 20h14"/></svg><span>Importar harem</span></button>
+  <div class="menu-wrap" id="mainMenuWrap">
+    <button type="button" class="btn ghost icon-btn" id="btnMainMenu" aria-haspopup="true" aria-expanded="false" aria-label="Más opciones" title="Más opciones"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="12" cy="19" r="1.2"/></svg></button>
+    <div class="dropdown-menu hidden" id="mainMenu" hidden role="menu" aria-label="Más opciones">
+      <div class="dropdown-label">Orden del harem</div>
+      <button type="button" class="dropdown-item" id="btnPositions">Posiciones guardadas</button>
+      <button type="button" class="dropdown-item" id="btnResetOrderOnly">Volver al orden de Mudae</button>
+      <div class="dropdown-sep"></div>
+      <div class="dropdown-label">Datos</div>
+      <button type="button" class="dropdown-item" id="btnProjExport">Guardar copia completa (.json)</button>
+      <button type="button" class="dropdown-item" id="btnProjImport">Cargar copia completa (.json)</button>
+      <button type="button" class="dropdown-item" id="btnOpenData">Abrir carpeta de datos</button>
+      <div class="dropdown-sep"></div>
+      <div class="dropdown-label">Aplicación</div>
+      <button type="button" class="dropdown-item" id="btnAccounts">Cuenta de Mudae</button>
+      <button type="button" class="dropdown-item" id="btnHelp">Ayuda y atajos</button>
+      <div class="dropdown-sep"></div>
+      <button type="button" class="dropdown-item danger" id="btnReset">Borrar todos los datos</button>
+    </div>
+  </div>
+</header>
+
+<div class="pages">
+<main id="tabHome" class="page"></main>
+
+<main id="tabLib" class="page hidden" hidden>
+  <div class="tools">
+    <div class="search-wrap">
+      <span class="si"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4-4"/></svg></span>
+      <input class="input" id="search" type="search" placeholder="Buscar personaje o serie" autocomplete="off" title="Escribe un nombre o una serie; verás sugerencias mientras escribes">
+    </div>
+    <label class="select-wrap"><span>Serie</span><select class="input" id="seriesSelect" title="Mostrar solo una serie"></select></label>
+    <label class="select-wrap"><span>Llaves</span>
+      <select class="input" id="keyFilter" title="Mostrar solo personajes según sus llaves">
+        <option value="all">Todos</option>
+        <option value="with_keys">Con llaves</option>
+        <option value="no_keys">Sin llaves</option>
+        <option value="keys_3">Bronce o plata (3 o más)</option>
+        <option value="keys_6">Caos (6 o más)</option>
+        <option value="keys_10">Alma gemela (10 o más)</option>
+        <option value="keys_nocolor">Con llaves y sin color de marco</option>
+      </select>
+    </label>
+    <div class="menu-wrap">
+      <button type="button" class="btn" id="btnSortMenu" aria-haspopup="true" title="Reordena tu harem; después podrás copiar el orden para Mudae"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16"/><path d="M3 16l4 4 4-4"/><path d="M17 20V4"/><path d="M13 8l4-4 4 4"/></svg><span>Ordenar</span></button>
+      <div class="dropdown-menu hidden" id="sortMenu" hidden role="menu" aria-label="Ordenar">
+        <div class="dropdown-label">Reordenar el harem por</div>
+        <button type="button" class="dropdown-item" data-sort="kakera">Kakera, de mayor a menor</button>
+        <button type="button" class="dropdown-item" data-sort="keys">Llaves, de mayor a menor</button>
+        <button type="button" class="dropdown-item" data-sort="spheres">Esferas, de mayor a menor</button>
+        <button type="button" class="dropdown-item" data-sort="rank">Ranking, del mejor al peor</button>
+        <button type="button" class="dropdown-item" data-sort="az">Nombre, de la A a la Z</button>
+        <button type="button" class="dropdown-item" data-sort="series">Serie, de la A a la Z</button>
+        <div class="dropdown-sep"></div>
+        <button type="button" class="dropdown-item" data-sort="reverse">Invertir el orden actual</button>
+      </div>
+    </div>
+    <span class="sp"></span>
+    <button type="button" class="btn small danger" id="btnUndoDivorce" title="Devuelve a la biblioteca los personajes del último divorcio" hidden>Deshacer divorcio</button>
+    <span class="total" id="libTotal"></span>
+    <button type="button" class="btn" id="btnQuickSm" title="Genera los comandos que dejan tu harem en Mudae con el orden que ves aquí"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4"/><path d="M7 8l5-5 5 5"/><path d="M5 20h14"/></svg><span>Exportar orden</span></button>
+  </div>
+
+  <div class="cache-line" id="cacheLine">
+    <span class="progress hidden" id="progressWrap"><i id="progressBar"></i></span>
+    <span id="cacheLabel"></span>
+    <button type="button" class="btn small hidden" id="btnRetryCache" hidden title="Vuelve a descargar las imágenes que fallaron">Reintentar imágenes</button>
+  </div>
+  <div id="warnBox" class="warnbox hidden"></div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="empty" id="empty">
+    <strong id="emptyTitle">Aún no hay personajes</strong>
+    <span id="emptyDesc">Importa tu harem desde Discord para empezar.</span>
+    <button type="button" class="btn primary" id="btnEmptyImport">Importar harem</button>
+  </div>
+</main>
+
+<!-- PESTAÑA: ORDENAR POR SERIE -->
+<main id="tabSeries" class="page hidden" hidden>
+  <section class="tool-card">
+    <h2>Ordenar por Serie</h2>
+    <p class="hint">
+      Define el orden de tus series y el orden de las fotos dentro de cada una.
+      Arrastra una serie desde su fila para colocarla antes o después; pulsa una fila para desplegar sus personajes y arrastra las tarjetas para ordenarlas.
+    </p>
+    <details class="series-block" open>
+      <summary>Buscar y ordenar</summary>
+      <div class="series-block-body">
+        <div class="row">
+          <input class="input grow" id="seriesSearch" type="search" placeholder="Buscar serie…" autocomplete="off" style="max-width:260px">
+          <select class="input" id="seriesSortMode" title="Ordenar series automáticamente (las fijadas no se mueven)">
+            <option value="manual">↕ Orden manual</option>
+            <option value="az">Alfabético (A-Z)</option>
+            <option value="count">Más personajes primero</option>
+            <option value="kakera">Más Kakera primero</option>
+            <option value="completion">Mayor % completado</option>
+            <option value="missing">Menos faltantes primero</option>
+          </select>
+          <select class="input" id="seriesJump" title="Ir rápidamente a una serie"><option value="">Ir a serie…</option></select>
+          <button type="button" class="btn small" id="btnSeriesExpandAll">Expandir todo</button>
+          <button type="button" class="btn small" id="btnSeriesCollapseAll">Contraer todo</button>
+          <button type="button" class="btn small" id="btnSeriesResetOrder" title="Volver al orden de series de la importación original">Orden original</button>
+        </div>
+      </div>
+    </details>
+
+    <details class="series-block" open>
+      <summary>Exportar harem</summary>
+      <div class="series-block-body">
+        <div class="row">
+          <button type="button" class="btn small primary" id="btnSeriesCopySm" title="Genera los comandos para dejar tus series en este orden dentro de Mudae">Copiar orden de series</button>
+          <button type="button" class="btn small" id="btnSeriesCopyVisible" title="Genera el orden solo con las series que ves ahora (según el buscador)">Copiar solo las visibles</button>
+          <button type="button" class="btn small" id="btnSeriesFullSm" title="Aplica el orden y genera los comandos para ordenar todos tus personajes">Exportar harem completo</button>
+        </div>
+      </div>
+    </details>
+
+    <details class="series-block">
+      <summary>Aplicar orden y presets</summary>
+      <div class="series-block-body">
+        <div class="row">
+          <button type="button" class="btn small primary" id="btnSeriesApply" title="Reordenar la biblioteca según el orden de series y de fotos">Aplicar a la biblioteca</button>
+          <button type="button" class="btn small" id="btnSeriesPreview" title="Ver qué posiciones cambiarán antes de aplicar">Vista previa</button>
+        </div>
+        <div class="row">
+          <label class="check"><input type="checkbox" id="optSeriesPinned" checked> Respetar los personajes fijados al aplicar</label>
+          <label class="check"><input type="checkbox" id="optSeriesAutoApply"> Aplicar automáticamente al mover una serie</label>
+        </div>
+        <div class="series-subtools">
+          <div class="row">
+            <span class="muted" style="font-size:12px">Presets de orden:</span>
+            <input class="input" id="seriesPresetName" placeholder="Nombre del preset…" maxlength="60" style="width:170px">
+            <button type="button" class="btn small" id="btnSeriesPresetSave" title="Guardar el orden actual como preset">Guardar</button>
+            <select class="input" id="seriesPresetSelect" title="Presets guardados"><option value="">— Presets guardados —</option></select>
+            <button type="button" class="btn small" id="btnSeriesPresetLoad">Cargar</button>
+            <button type="button" class="btn small ghost" id="btnSeriesPresetDelete" title="Eliminar preset seleccionado">✕</button>
+            <span class="sep"></span>
+            <button type="button" class="btn small" id="btnSeriesExportOrder" title="Exportar el orden de series y presets a .json">Exportar orden</button>
+            <button type="button" class="btn small" id="btnSeriesImportOrder" title="Importar un orden de series desde .json">⬆ Importar orden</button>
+            <input type="file" id="seriesOrderFile" accept="application/json,.json" class="hidden" hidden>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <span class="msg" id="seriesMsg"></span>
+  </section>
+
+  <section class="tool-card">
+    <div class="series-order-top">
+      <h3>Orden actual de las series</h3>
+      <div class="row">
+        <span class="muted" id="seriesOrderCount">0 series</span>
+        <div class="series-bulk-bar hidden" id="seriesBulkBar" hidden>
+          <span class="batch-badge"><span id="seriesBulkCount">0</span> seleccionada(s)</span>
+          <button type="button" class="btn small" id="btnSeriesBulkPin">Fijar</button>
+          <button type="button" class="btn small" id="btnSeriesBulkUnpin">Soltar</button>
+          <button type="button" class="btn small" id="btnSeriesBulkClear">Limpiar</button>
+        </div>
+      </div>
+    </div>
+    <div class="series-order-list" id="seriesOrderList"></div>
+    <div class="empty hidden" id="seriesEmpty" hidden>
+      <strong>No hay series para ordenar</strong>
+      <span>Importa tu colección desde la pestaña Biblioteca para comenzar.</span>
+    </div>
+  </section>
+</main>
+
+<main id="tabPhotos" class="page hidden" hidden></main>
+<main id="tabFriends" class="page hidden" hidden></main>
+<main id="tabSettings" class="page hidden" hidden></main>
+</div><!-- /pages -->
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- BARRA FLOTANTE: acciones sobre los personajes seleccionados -->
+<div class="batch-bar hidden" id="batchBar" hidden>
+  <div class="batch-info"><span class="batch-badge" id="batchCount">0 seleccionados</span></div>
+  <div class="batch-actions">
+    <button type="button" class="btn" id="btnBatchTop" title="Los coloca al principio de tu harem">Al inicio</button>
+    <button type="button" class="btn" id="btnBatchBottom" title="Los coloca al final de tu harem">Al final</button>
+    <div class="batch-pos-group">
+      <input type="number" class="input small-num" id="batchPosInput" min="1" placeholder="#Pos" title="Número de puesto de destino" aria-label="Puesto de destino">
+      <button type="button" class="btn" id="btnBatchMovePos" title="Los mueve al puesto que indicaste">Mover</button>
+    </div>
+    <span class="sep"></span>
+    <button type="button" class="btn" id="btnBatchPin" title="Fija o suelta la posición de los seleccionados para que no se muevan al ordenar">Fijar / Soltar</button>
+    <button type="button" class="btn" id="btnBatchModalOpen" title="Color de marco, copiar nombres y más opciones para la selección">Color y más</button>
+    <button type="button" class="btn danger" id="btnBatchDivorce" title="Prepara el divorcio de los seleccionados y los quita de la biblioteca (con copia de seguridad)">Divorciar</button>
+    <span class="sep"></span>
+    <button type="button" class="btn ghost" id="btnBatchSelectAll" title="Selecciona todos los personajes que ves (Ctrl+A)">Seleccionar todos</button>
+    <button type="button" class="btn ghost" id="btnBatchClear" title="Quita la selección (Esc)">Deseleccionar</button>
+  </div>
+</div>
+
+<!-- MODAL DE IMPORTACIÓN -->
+<div class="modal hidden" id="importModal" hidden>
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="importTitle">
+    <div class="modal-head">
+      <h2 id="importTitle">Importar harem</h2>
+      <button type="button" class="btn small ghost" id="btnCloseImport">Cerrar</button>
+    </div>
+    <div id="importForm">
+    <div class="tutorial-box">
+      <strong>Cómo exportar tu harem desde Discord</strong>
+      <ol>
+        <li>En tu servidor con Mudae, ejecuta este comando:
+          <div class="code-line"><span id="tutorialCmd">$mmsaty+z+ri-c+x+ko</span><button type="button" class="btn small" id="btnCopyCmdTutorial">Copiar</button></div>
+        </li>
+        <li>Mudae te responde por mensaje directo con las series, el kakera, las llaves, las esferas, el ranking, los colores y las imágenes.</li>
+        <li>Copia el texto desde el primer título de serie (por ejemplo <code>Neon Genesis Evangelion - xx/xx</code>) hasta el último personaje, con su enlace. Deja fuera el encabezado general del mensaje.</li>
+      </ol>
+    </div>
+    <div class="row" style="margin:14px 0 8px">
+      <button type="button" class="btn small" id="btnPasteImport">Pegar del portapapeles</button>
+      <button type="button" class="btn small" id="btnPickImportFile">Abrir archivo .txt</button>
+      <input type="file" id="importFile" accept="text/plain,.txt" class="hidden" hidden>
+      <span class="muted" id="importPasteHint" style="font-size:11.5px"></span>
+    </div>
+    <textarea class="input" id="importText" spellcheck="false" style="width:100%;min-height:170px" placeholder="Pega aquí el texto que copiaste de Discord"></textarea>
+    <div class="import-diag" id="importDiag" hidden></div>
+    <div class="row" style="margin-top:14px;justify-content:space-between">
+      <span class="msg" id="importMsg"></span>
+      <div class="row">
+        <span class="muted" style="font-size:12px">Ctrl+Enter para importar</span>
+        <button type="button" class="btn" id="btnCancelImport">Cancelar</button>
+        <button type="button" class="btn primary" id="btnParse">Importar</button>
+      </div>
+    </div>
+    </div><!-- /importForm -->
+    <div id="importSummary" class="import-summary" hidden></div>
+  </div>
+</div>
+
+<!-- PANEL LATERAL DE CONFIGURACIÓN -->
+<div class="drawer-backdrop hidden" id="drawerBackdrop" hidden></div>
+<aside class="drawer" id="toolsDrawer" inert aria-hidden="true" aria-label="Panel de configuración y personalización">
+  <div class="drawer-head">
+    <h2>Configuración</h2>
+    <button type="button" class="btn small" id="btnCloseDrawer">Cerrar</button>
+  </div>
+
+  <div class="drawer-tabs" id="drawerTabs" role="tablist" aria-label="Secciones de configuración">
+    <button type="button" class="drawer-tab active" data-drawer-tab="visual" role="tab" aria-selected="true">Visualización</button>
+    <button type="button" class="drawer-tab" data-drawer-tab="orden" role="tab" aria-selected="false">Orden</button>
+    <button type="button" class="drawer-tab" data-drawer-tab="apariencia" role="tab" aria-selected="false">Apariencia</button>
+    <button type="button" class="drawer-tab" data-drawer-tab="rendimiento" role="tab" aria-selected="false">Rendimiento</button>
+    <button type="button" class="drawer-tab" data-drawer-tab="datos" role="tab" aria-selected="false" id="drawerTabDatos">Datos</button>
+  </div>
+
+  <div class="drawer-body">
+
+    <!-- PANEL · VISUALIZACIÓN -->
+    <div class="drawer-pane active" data-drawer-pane="visual">
+    <div class="tool-section">
+      <div class="slider-row">
+        <span class="muted" style="font-size:12px">Ancho de tarjeta:</span>
+        <input type="range" id="cardSize" min="96" max="260" step="4" value="152">
+        <span id="cardSizeOut" class="mono" style="font-size:12px;min-width:42px">152px</span>
+      </div>
+
+      <div class="row" style="justify-content:space-between;margin-top:6px">
+        <span class="muted" style="font-size:12px">Simulador de páginas del harem:</span>
+        <select class="input" id="pageSizeSelect" style="padding:4px 8px;font-size:12px">
+          <option value="0">Sin divisores de página</option>
+          <option value="10">Cada 10 personajes (Estándar)</option>
+          <option value="15">Cada 15 personajes (Extendido)</option>
+        </select>
+      </div>
+
+      <div class="row" style="margin-top:6px">
+        <label class="check"><input type="checkbox" id="optShowNotes"> Mostrar notas en las tarjetas</label>
+        <label class="check"><input type="checkbox" id="optShowTags" checked> Mostrar etiquetas en las tarjetas</label>
+        <label class="check"><input type="checkbox" id="optGroup"> Agrupar vista por serie (con progreso)</label>
+        <label class="check"><input type="checkbox" id="optGifs" checked> Pausar animaciones GIF</label>
+      </div>
+    </div>
+    </div><!-- /pane visual -->
+
+    <!-- PANEL · ORDEN -->
+    <div class="drawer-pane" data-drawer-pane="orden" hidden>
+    <div class="tool-section">
+      <p class="hint" style="margin:0">Ordene su colección según el criterio seleccionado. Los personajes marcados con <b>Fijar</b> conservarán su puesto actual.</p>
+      <label class="check" title="Con Nitro los comandos se dividen en bloques más largos (menos mensajes)"><input type="checkbox" id="optNitro"> Tengo Discord Nitro (mensajes más largos al exportar)</label>
+      <label class="check"><input type="checkbox" id="optAutoSmOnSort" checked> Mostrar los comandos de orden al ordenar</label>
+
+      <div class="row" style="gap:6px;margin-top:4px">
+        <button type="button" class="btn small" data-sort="kakera">Por Kakera (Mayor a menor)</button>
+        <button type="button" class="btn small" data-sort="rank">Por Ranking (mejor primero)</button>
+        <button type="button" class="btn small" data-sort="spheres">Por Esferas (Mayor a menor)</button>
+        <button type="button" class="btn small" data-sort="keys">Por Llaves (Mayor a menor)</button>
+        <button type="button" class="btn small" data-sort="note">Por Notas (A-Z)</button>
+        <button type="button" class="btn small" data-sort="series">Por Serie (A-Z)</button>
+        <button type="button" class="btn small" data-sort="az">Alfabético (A-Z)</button>
+        <button type="button" class="btn small" data-sort="reverse">⇅ Invertir orden actual</button>
+      </div>
+
+      <div class="row" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--line);justify-content:space-between">
+        <span class="muted" style="font-size:12px">Fijación rápida de Top:</span>
+        <div class="row" style="gap:6px">
+          <button type="button" class="btn small" id="btnPinTop10" title="Fijar los primeros 10 personajes">Fijar Top 10</button>
+          <button type="button" class="btn small" id="btnPinTop15" title="Fijar los primeros 15 personajes">Fijar Top 15</button>
+          <button type="button" class="btn small" id="btnUnpinAll" title="Quitar todos los pines">Soltar todos</button>
+        </div>
+      </div>
+    </div>
+    </div><!-- /pane orden -->
+
+    <!-- PANEL · APARIENCIA -->
+    <div class="drawer-pane" data-drawer-pane="apariencia" hidden>
+    <div class="tool-section">
+      <p class="hint" style="margin:0">Personalice la paleta de colores, bordes luminosos y efectos holográficos.</p>
+
+      <label style="font-size:12px;color:var(--muted);font-weight:650">Temas predefinidos:</label>
+      <div class="theme-presets">
+        <button type="button" class="preset-btn" data-theme="mudae"><span class="preset-swatch" style="background:#8b5cf6"></span>Mudae Violeta</button>
+        <button type="button" class="preset-btn" data-theme="oled"><span class="preset-swatch" style="background:#10b981"></span>Esmeralda OLED</button>
+        <button type="button" class="preset-btn" data-theme="cyber"><span class="preset-swatch" style="background:#06b6d4"></span>Cyber Neón</button>
+        <button type="button" class="preset-btn" data-theme="sakura"><span class="preset-swatch" style="background:#ec4899"></span>Rosa Sakura</button>
+        <button type="button" class="preset-btn" data-theme="ocean"><span class="preset-swatch" style="background:#3b82f6"></span>Azul Océano</button>
+        <button type="button" class="preset-btn" data-theme="gold"><span class="preset-swatch" style="background:#f59e0b"></span>Ámbar Real</button>
+      </div>
+
+      <div class="grid-2" style="margin-top:6px">
+        <div class="field">
+          <label for="customBgPicker">Color de fondo</label>
+          <div class="row">
+            <input type="color" id="customBgPicker" value="#0f1115">
+            <span class="mono muted" id="customBgLabel" style="font-size:11.5px">#0F1115</span>
+          </div>
+        </div>
+        <div class="field">
+          <label for="customAccentPicker">Color de acento / Neón</label>
+          <div class="row">
+            <input type="color" id="customAccentPicker" value="#8b5cf6">
+            <span class="mono muted" id="customAccentLabel" style="font-size:11.5px">#8B5CF6</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="slider-row" style="margin-top:4px">
+        <span class="muted" style="font-size:12px">Bordes redondeados:</span>
+        <input type="range" id="cardRadius" min="0" max="26" step="2" value="12">
+        <span id="cardRadiusOut" class="mono" style="font-size:12px;min-width:36px">12px</span>
+      </div>
+
+      <div class="row" style="justify-content:space-between;margin-top:4px">
+        <span class="muted" style="font-size:12px">Proporción de imagen:</span>
+        <select class="input" id="cardAspect" style="padding:4px 8px;font-size:12px">
+          <option value="3/4">Vertical estándar (3:4)</option>
+          <option value="2/3">Póster alto (2:3)</option>
+          <option value="1/1">Cuadrado (1:1)</option>
+        </select>
+      </div>
+
+      <div class="row" style="margin-top:6px">
+        <label class="check"><input type="checkbox" id="optNeonBorders" checked> Bordes Neón intensos en tarjetas</label>
+        <label class="check"><input type="checkbox" id="optHoloSheen" checked> Reflejo holográfico al pasar el cursor</label>
+        <label class="check"><input type="checkbox" id="optBgGlow" checked> Iluminación ambiental de fondo</label>
+        <label class="check"><input type="checkbox" id="optCardGlow" checked> Resplandor exterior por color HEX</label>
+      </div>
+    </div>
+    </div><!-- /pane apariencia -->
+
+    <!-- PANEL · RENDIMIENTO -->
+    <div class="drawer-pane" data-drawer-pane="rendimiento" hidden>
+    <div class="tool-section">
+      <p class="hint" style="margin:0">Opciones para colecciones grandes, equipos lentos o entornos con poca memoria.</p>
+      <div class="row">
+        <label class="check"><input type="checkbox" id="optLightTheme"> Tema claro</label>
+        <label class="check"><input type="checkbox" id="optCompactMode"> Modo compacto</label>
+        <label class="check"><input type="checkbox" id="optPerfMode"> Modo rendimiento (sin caché ni efectos)</label>
+      </div>
+      <p class="hint" style="margin:0">El modo rendimiento desactiva la caché automática de imágenes, el brillo ambiental, los bordes neón y el reflejo holográfico. Ideal para más de 2000 personajes.</p>
+    </div>
+    </div><!-- /pane rendimiento -->
+
+    <!-- PANEL · DATOS / GUARDADO AUTOMÁTICO -->
+    <div class="drawer-pane" data-drawer-pane="datos" hidden>
+    <div class="tool-section">
+      <h4 style="margin:0 0 6px;font-size:13px">Guardado automático</h4>
+      <p class="hint" style="margin:0 0 10px">Tus cambios se guardan solos dentro de la aplicación. Opcionalmente, puedes mantener además una copia <code>.json</code> en un archivo de tu PC.</p>
+
+      <div id="autoFileBox">
+        <label class="check"><input type="checkbox" id="optAutoFile"> Mantener una copia en un archivo .json</label>
+        <div class="row" style="gap:6px;margin-top:8px">
+          <input class="input" id="autoFilePath" readonly placeholder="(ningún archivo elegido)" style="flex:1;min-width:0">
+          <button type="button" class="btn small" id="btnChooseAutoFile">Elegir…</button>
+        </div>
+        <div class="row" style="justify-content:space-between;margin-top:8px;align-items:center">
+          <span class="muted" id="autoFileStatus" style="font-size:11.5px"></span>
+          <div class="row" style="gap:6px">
+            <button type="button" class="btn small" id="btnRevealAutoFile" hidden>Abrir carpeta</button>
+            <button type="button" class="btn small" id="btnSaveAutoFileNow">Guardar ahora</button>
+          </div>
+        </div>
+      </div>
+
+      <p class="hint" id="autoFileUnavailable" hidden style="margin:0">La copia en archivo solo está disponible en la <b>app de escritorio</b>. En el navegador, usa <b>Menú → Proyecto → Guardar proyecto</b>.</p>
+
+      <div style="border-top:1px solid var(--line);padding-top:10px;margin-top:12px">
+        <h4 style="margin:0 0 6px;font-size:13px">Al reimportar</h4>
+        <p class="hint" style="margin:0">Al volver a importar tu harem se <b>actualizan</b> kakera, llaves, series e imágenes, y se <b>conservan</b> tus notas, colores, etiquetas y fijados. Al terminar verás un resumen de los cambios.</p>
+      </div>
+    </div>
+    </div><!-- /pane datos -->
+
+  </div>
+</aside>
+
+<!-- FICHA DEL PERSONAJE -->
+<div class="modal hidden" id="editModal" hidden>
+  <div class="modal-panel sheet" role="dialog" aria-modal="true" aria-labelledby="editName">
+    <div class="gal">
+      <div class="gal-grid" id="sheetGallery"></div>
+      <div class="gal-cap"><span id="sheetGalleryMsg"></span><button type="button" class="btn small ghost" id="btnFetchGallery" title="Vuelve a buscar las imágenes del personaje en Mudae">Actualizar</button></div>
+    </div>
+    <div class="det">
+      <button type="button" class="btn ghost icon-btn x" id="btnCloseEdit" aria-label="Cerrar"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      <h1 id="editName"></h1>
+      <p class="sr" id="editSeries"></p>
+      <div class="data">
+        <div><div class="v k" id="roKakera">0</div><div class="l">Kakera</div></div>
+        <div><div class="v" id="roKeys">0</div><div class="l">Llaves</div></div>
+        <div><div class="v" id="roRank">—</div><div class="l">Ranking de claim</div></div>
+        <div><div class="v" id="roSpheres">—</div><div class="l">Esferas</div></div>
+      </div>
+      <h3>Página en Mudae</h3>
+      <p>Abre la ficha oficial del personaje en mudae.net.</p>
+      <a class="code code-link" id="editLink" href="#" target="_blank" rel="noopener"><span id="editCode">—</span><b>Abrir en mudae.net</b></a>
+      <h3>Fotos que combinan</h3>
+      <p>Mira qué fotos de este personaje combinan con las de otros que tienes.</p>
+      <div class="btn-row"><button type="button" class="btn" id="btnEditMatches">Ver fotos que combinan</button><button type="button" class="btn" id="btnEditTags">Ver etiquetas de sus fotos</button></div>
+      <h3>Comandos rápidos</h3>
+      <p>Copian el comando con el nombre de este personaje, listo para pegar en Discord.</p>
+      <div class="btn-row" id="editQuickCmds">
+        <button type="button" class="btn small" data-qcmd="$im {n}" title="Muestra la ficha del personaje en Mudae">Información</button>
+        <button type="button" class="btn small" data-qcmd="$ima {s}" title="Busca la serie del personaje en Mudae">Su serie</button>
+        <button type="button" class="btn small" data-qcmd="$alist {n}" title="Lista los nombres alternativos disponibles">Alias</button>
+        <button type="button" class="btn small" data-qcmd="$fm {n}" title="Lo convierte en tu personaje favorito">Hacerlo favorito</button>
+        <button type="button" class="btn small" data-qcmd="$wish {n}" title="Lo añade a tu lista de deseos">Añadir a deseos</button>
+        <button type="button" class="btn small" data-qcmd="$like {n}" title="Lo añade a tu lista de favoritos">Me gusta</button>
+      </div>
+      <div id="editHexSection">
+        <h3>Color de marco</h3>
+        <p id="frameHint"></p>
+        <div class="frame-row">
+          <div>
+            <div class="sw-label" id="swLabel">Colores de la foto</div>
+            <div class="swatches" id="swatches"></div>
+            <div class="hx"><input class="input" id="editHex" maxlength="7" placeholder="#6FA8FF" autocomplete="off" spellcheck="false"><span class="muted">o escribe tu propio color</span></div>
+            <div class="hx"><button type="button" class="btn primary small" id="btnSaveEdit" hidden title="Guarda el color de marco y copia el comando para aplicarlo en Mudae">Guardar color</button><span class="muted" id="saveColorNote"></span></div>
+          </div>
+          <div class="frame-prev"><div class="media" id="framePrev"><img alt="" referrerpolicy="no-referrer"></div><div class="hex-read" id="hexRead">Sin color</div></div>
+        </div>
+      </div>
+      <div class="acts">
+        <button type="button" class="btn" id="btnEditTogglePin" title="Mantiene al personaje en su puesto cuando ordenas el harem">Fijar posición</button>
+        <button type="button" class="btn" id="btnEditTop" title="Lo coloca en el puesto número 1 de tu harem">Mover al inicio</button>
+        <span class="sp"></span>
+        <button type="button" class="btn danger" id="btnEditDivorce" title="Prepara el divorcio de este personaje y lo quita de la biblioteca">Divorciar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ACCIONES SOBRE LA SELECCIÓN -->
+<div class="modal hidden" id="batchModal" hidden>
+  <div class="modal-panel narrow" role="dialog" aria-modal="true" aria-labelledby="batchModalTitle">
+    <div class="modal-head">
+      <h2 id="batchModalTitle">Acciones sobre la selección</h2>
+      <button type="button" class="btn small ghost" id="btnCloseBatchModal">Cerrar</button>
+    </div>
+    <p class="hint" id="batchModalSubtitle">Se aplican a los personajes seleccionados.</p>
+
+    <div class="char-section">
+      <h4>Color de marco</h4>
+      <span class="hintline">Aplica el mismo color a los seleccionados que tengan llaves y copia el comando para ponerlo también en Mudae.</span>
+      <div class="row">
+        <input type="color" id="batchColorPicker" value="#8b5cf6" class="color-in" aria-label="Elegir color">
+        <input class="input" id="batchHexInput" value="#8B5CF6" maxlength="7" style="width:120px;font-family:var(--font-mono)" aria-label="Color en formato #RRGGBB">
+        <button type="button" class="btn primary" id="btnApplyBatchEc">Aplicar color y copiar comando</button>
+      </div>
+    </div>
+
+    <div class="char-section">
+      <h4>Copiar la selección</h4>
+      <span class="hintline">Para pegar en Discord o enviar a otra persona.</span>
+      <div class="row">
+        <button type="button" class="btn" id="btnCopyBatchNamesDollar" title="Los nombres separados con $, listos para usar en un comando">Copiar nombres para comandos</button>
+        <button type="button" class="btn" id="btnCopyBatchTradeList" title="Una lista con el nombre, la serie y el kakera de cada uno">Copiar lista con kakera</button>
+      </div>
+    </div>
+
+    <div class="char-section">
+      <h4>Divorcio</h4>
+      <span class="hintline">Prepara el comando para divorciar a los seleccionados en Discord. Antes se crea una copia de seguridad y puedes deshacerlo.</span>
+      <label class="check" style="margin:2px 0 10px"><input type="checkbox" class="switch" id="divorceRemoveFromLib" checked> Quitarlos también de la biblioteca</label>
+      <div class="row"><button type="button" class="btn danger" id="btnDivorceSelected" style="border-color:var(--danger)">Preparar divorcio</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DE COMANDOS GENERADOS -->
+<div class="modal hidden" id="smModal" hidden>
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="smTitle">
+    <div class="modal-head">
+      <h2 id="smTitle">Comandos para Discord</h2>
+      <button type="button" class="btn small" id="btnCloseSm">Cerrar</button>
+    </div>
+    <div class="cmd-toolbar">
+      <label class="check">Alcance:
+        <select class="input" id="cmdScope" title="Personajes incluidos en el comando">
+          <option value="all">Toda la colección</option>
+          <option value="visible">Solo visibles</option>
+          <option value="selection">Selección</option>
+        </select>
+      </label>
+      <button type="button" class="btn small" id="btnCmdRegen">Regenerar</button>
+      <button type="button" class="btn small" id="btnCmdHistory2">Historial</button>
+      <span class="muted" id="cmdScopeHint">Selecciona el alcance y pulsa Regenerar.</span>
+    </div>
+    <div id="smBody"></div>
+    <div class="modal-foot">
+      <button type="button" class="btn" id="btnCopyAll">Copiar todo</button>
+      <button type="button" class="btn" id="btnDownloadSm">Descargar .txt</button>
+      <button type="button" class="btn danger" id="btnUndoDivorceSm" hidden>Deshacer divorcio</button>
+      <button type="button" class="btn primary" id="btnCopyFirst">Copiar bloque 1</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DE ESTADÍSTICAS -->
+<div class="modal hidden" id="statsModal" hidden>
+  <div class="modal-panel wide" role="dialog" aria-modal="true" aria-labelledby="statsTitle">
+    <div class="modal-head">
+      <h2 id="statsTitle">Panel de Estadísticas</h2>
+      <button type="button" class="btn small" id="btnCloseStats">Cerrar</button>
+    </div>
+    <div class="tabs-inline" id="statsTabs">
+      <button type="button" class="btn small stats-tab active" data-stats-tab="summary">Resumen</button>
+      <button type="button" class="btn small stats-tab" data-stats-tab="series">Series y completitud</button>
+      <button type="button" class="btn small stats-tab" data-stats-tab="order">Comparar orden</button>
+      <button type="button" class="btn small stats-tab" data-stats-tab="imports">Importaciones</button>
+    </div>
+    <div id="statsBody" class="stats-body"></div>
+  </div>
+</div>
+
+<!-- MODAL DE HISTORIAL DE COMANDOS -->
+<div class="modal hidden" id="historyModal" hidden>
+  <div class="modal-panel wide" role="dialog" aria-modal="true" aria-labelledby="historyTitle">
+    <div class="modal-head">
+      <h2 id="historyTitle">Historial de comandos</h2>
+      <button type="button" class="btn small" id="btnCloseHistory">Cerrar</button>
+    </div>
+    <p class="hint">Se guardan los últimos 40 comandos generados. Puedes copiarlos o descargarlos de nuevo.</p>
+    <div id="historyBody"></div>
+    <div class="modal-foot">
+      <button type="button" class="btn" id="btnClearHistory">Vaciar historial</button>
+      <button type="button" class="btn primary" id="btnCloseHistory2">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DE COPIAS DE SEGURIDAD -->
+<div class="modal hidden" id="backupsModal" hidden>
+  <div class="modal-panel wide" role="dialog" aria-modal="true" aria-labelledby="backupsTitle">
+    <div class="modal-head">
+      <h2 id="backupsTitle">Copias de seguridad</h2>
+      <button type="button" class="btn small" id="btnCloseBackups">Cerrar</button>
+    </div>
+    <p class="hint">Se conservan hasta 5 copias en este navegador. Se crean automáticamente antes de importar o cargar un proyecto. También puedes descargarlas como .json.</p>
+    <div id="backupsBody"></div>
+    <div class="modal-foot">
+      <button type="button" class="btn" id="btnDownloadProjectBackup">Exportar proyecto actual</button>
+      <button type="button" class="btn primary" id="btnCreateBackup">Crear copia ahora</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DE FILTROS GUARDADOS -->
+<div class="modal hidden" id="filtersModal" hidden>
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="filtersTitle">
+    <div class="modal-head">
+      <h2 id="filtersTitle">Filtros guardados</h2>
+      <button type="button" class="btn small" id="btnCloseFilters">Cerrar</button>
+    </div>
+    <div class="char-section">
+      <h4><span>Guardar filtros actuales</span></h4>
+      <span class="hintline">Se guardan búsqueda, serie, llaves, nota, etiqueta, vista agrupada y paginación.</span>
+      <div class="row">
+        <input class="input" id="savedFilterName" maxlength="60" placeholder="Nombre del filtro…" style="flex:1">
+        <button type="button" class="btn small primary" id="btnSaveFilter">Guardar actual</button>
+      </div>
+    </div>
+    <div id="savedFiltersList" class="saved-filters-list"></div>
+  </div>
+</div>
+
+<!-- MODAL DE DUPLICADOS -->
+<div class="modal hidden" id="duplicatesModal" hidden>
+  <div class="modal-panel wide" role="dialog" aria-modal="true" aria-labelledby="duplicatesTitle">
+    <div class="modal-head">
+      <h2 id="duplicatesTitle">Duplicados detectados</h2>
+      <button type="button" class="btn small" id="btnCloseDuplicates">Cerrar</button>
+    </div>
+    <div id="duplicatesBody"></div>
+    <div class="modal-foot">
+      <button type="button" class="btn" id="btnSelectAllDuplicates">Seleccionar todos los duplicados</button>
+      <button type="button" class="btn primary" id="btnCloseDuplicates2">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DE VISTA PREVIA (DIFERENCIAS DE ORDEN) -->
+<div class="modal hidden" id="previewModal" hidden>
+  <div class="modal-panel wide" role="dialog" aria-modal="true" aria-labelledby="previewTitle">
+    <div class="modal-head">
+      <h2 id="previewTitle">Vista previa</h2>
+      <button type="button" class="btn small" id="btnClosePreview">Cerrar</button>
+    </div>
+    <div id="previewSummary" class="sm-summary"></div>
+    <div id="previewBody"></div>
+    <div class="modal-foot">
+      <button type="button" class="btn" id="btnCancelPreview">Cancelar</button>
+      <button type="button" class="btn primary" id="btnApplyPreview">Aplicar cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DE ATAJOS Y ACCESIBILIDAD -->
+<div class="modal hidden" id="profilesModal" hidden>
+  <div class="modal-panel narrow" role="dialog" aria-modal="true" aria-labelledby="profilesTitle">
+    <div class="modal-head">
+      <h2 id="profilesTitle">Perfiles</h2>
+      <button type="button" class="btn small ghost" id="btnCloseProfiles">Cerrar</button>
+    </div>
+    <p class="hint">Un perfil es una colección independiente: por ejemplo, un servidor de Discord o una cuenta de Mudae distinta. Al cambiar de perfil, Seiri guarda el actual y carga el otro. Los ajustes visuales son los mismos para todos.</p>
+    <div id="profilesList" class="plist" style="margin-top:14px"></div>
+    <div class="char-section">
+      <h4>Crear un perfil nuevo</h4>
+      <span class="hintline">Ponle un nombre que te ayude a reconocerlo.</span>
+      <div class="row">
+        <input class="input" id="profNewName" maxlength="40" placeholder="Por ejemplo: Servidor de anime" style="flex:1">
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button type="button" class="btn primary" id="btnProfCreateEmpty" title="Empieza con una colección vacía para importar otra lista">Crear perfil vacío</button>
+        <button type="button" class="btn" id="btnProfCreateCopy" title="Duplica la colección actual como punto de partida">Crear como copia del actual</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal hidden" id="positionsModal" hidden>
+  <div class="modal-panel narrow" role="dialog" aria-modal="true" aria-labelledby="positionsTitle">
+    <div class="modal-head">
+      <h2 id="positionsTitle">Posiciones guardadas</h2>
+      <button type="button" class="btn small ghost" id="btnClosePositions">Cerrar</button>
+    </div>
+    <p class="hint">Guarda cómo tienes ordenado el harem: personajes, series y posiciones fijadas. Más adelante puedes volver a ese orden con un clic.</p>
+    <p class="msg" id="posStatus" style="margin:12px 0"></p>
+    <div class="row">
+      <input class="input" id="posName" maxlength="60" placeholder="Nombre, por ejemplo: Antes de ordenar por kakera" style="flex:1">
+      <button type="button" class="btn primary" id="btnPosSave">Guardar el orden actual</button>
+    </div>
+    <div id="posList" style="margin-top:14px"></div>
+    <div class="char-section">
+      <h4>Copias automáticas</h4>
+      <span class="hintline">Seiri guarda una copia antes de importar, de divorciar y de cargar un proyecto. Desde aquí puedes recuperarlas.</span>
+      <button type="button" class="btn" id="btnOpenBackups">Ver copias automáticas</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal hidden" id="accountsModal" hidden>
+  <div class="modal-panel narrow" role="dialog" aria-modal="true" aria-labelledby="accountsTitle">
+    <div class="modal-head">
+      <h2 id="accountsTitle">Cuenta de Mudae</h2>
+      <button type="button" class="btn small" id="btnCloseAccounts">Cerrar</button>
+    </div>
+
+    <div class="char-section">
+      <h4><span>Mudae</span> <span class="kv-pill" id="acMudaeState">…</span></h4>
+      <span class="hintline">Vincula tu cuenta de Mudae para ver las fotos de cada personaje: sin ella no se pueden cargar las galerías de imágenes. Inicias sesión en la web oficial de Mudae y Seiri no ve tu contraseña.</span>
+      <div class="row">
+        <button type="button" class="btn small primary" id="btnMudaeLogin">Iniciar sesión en Mudae</button>
+        <button type="button" class="btn small" id="btnMudaeLogout">Cerrar sesión</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal hidden" id="helpModal" hidden>
+  <div class="modal-panel narrow" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+    <div class="modal-head">
+      <h2 id="helpTitle">⌨Atajos y accesibilidad</h2>
+      <button type="button" class="btn small" id="btnCloseHelp">Cerrar</button>
+    </div>
+    <div class="help-grid">
+      <div><kbd>Ctrl</kbd>+<kbd>Z</kbd></div><div>Deshacer</div>
+      <div><kbd>Ctrl</kbd>+<kbd>Y</kbd></div><div>Rehacer</div>
+      <div><kbd>Ctrl</kbd>+<kbd>A</kbd></div><div>Seleccionar todos los visibles</div>
+      <div><kbd>Ctrl</kbd>+<kbd>K</kbd> / <kbd>/</kbd></div><div>Enfocar la búsqueda</div>
+      <div><kbd>Ctrl</kbd>+<kbd>F</kbd></div><div>Enfocar la búsqueda</div>
+      <div><kbd>?</kbd></div><div>Abrir esta ayuda</div>
+      <div><kbd>Esc</kbd></div><div>Cerrar modal / limpiar selección</div>
+      <div><kbd>Espacio</kbd> / <kbd>Enter</kbd></div><div>Seleccionar tarjeta enfocada</div>
+      <div><kbd>E</kbd></div><div>Editar tarjeta enfocada</div>
+      <div><kbd>P</kbd></div><div>Fijar / soltar tarjeta enfocada</div>
+      <div><kbd>Alt</kbd>+<kbd>←</kbd>/<kbd>→</kbd></div><div>Mover selección una posición</div>
+      <div><kbd>Alt</kbd>+<kbd>Home</kbd>/<kbd>End</kbd></div><div>Mover selección al inicio / final</div>
+    </div>
+    <p class="hint" style="margin-top:12px">La app respeta <code>prefers-reduced-motion</code>. En pantallas táctiles los botones de fijar y editar están siempre visibles.</p>
+    <div class="modal-foot">
+      <button type="button" class="btn primary" id="btnCloseHelp2">Entendido</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Controles que ya no se muestran pero que el código todavía consulta (notas, etiquetas, filtros guardados, estadísticas) -->
+<div id="legacy" hidden aria-hidden="true">
+  <section id="statsBar"><span id="statCounts"></span><span id="statValid"></span><span id="statKakera"></span><span id="statKeys"></span><span id="statPinned"></span></section>
+  <span id="statQuota"></span>
+  <select id="tagFilter"><option value=""></option></select>
+  <input id="noteFilter" type="search"><input type="checkbox" id="optNote">
+  <button type="button" id="btnSavedFilters"></button><span id="savedFilterCount"></span>
+  <button type="button" id="btnStats"></button><button type="button" id="btnDuplicates"></button>
+  <button type="button" id="btnCmdHistory"></button><span id="cmdHistoryCount"></span>
+  <button type="button" id="btnBackups"></button><span id="backupCount"></span>
+  <button type="button" id="btnOpenDrawer"></button>
+  <span id="pendingBadge"></span>
+  <input id="batchNoteInput"><button type="button" id="btnApplyBatchNote"></button>
+  <input id="batchSaleAddInput" type="number" value="100"><button type="button" id="btnApplyBatchSale"></button>
+  <input id="batchTagsInput"><button type="button" id="btnBatchTagsAdd"></button><button type="button" id="btnBatchTagsRemove"></button><button type="button" id="btnBatchTagsClear"></button>
+  <datalist id="tagSuggestions"></datalist>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<input type="file" id="projFile" accept="application/json,.json" class="hidden" hidden>
+
+<script src="i18n.js"></script>
+<script src="i18n-en.js"></script>
+<script src="core.js"></script>
+<script src="app.js"></script>
+<script src="v5.js"></script>
+<script src="search.js"></script>
+<script src="shell.js"></script>
+<script src="photos.js"></script>
+<script src="timers.js"></script>
+<script src="home.js"></script>
+<script src="settings.js"></script>
+<script src="setup.js"></script>
+<script src="pwa.js"></script>
+</body>
+</html>
