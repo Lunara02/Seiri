@@ -6,9 +6,13 @@ Desktop app (Windows, portable) to organize your [Mudae](https://mudae.net) hare
 
 ## Download
 
-Get **Seiri-Portable-6.1.0.exe** from the [latest release](../../releases/latest). No installer: put it in its own folder and run it. To update, replace the exe and keep your **Seiri Datos** folder next to it; the app tells you in the sidebar when a newer version is out.
+Get **Seiri-Portable-6.2.0.exe** from the [latest release](../../releases/latest). No installer: put it in its own folder and run it. To update, replace the exe and keep your **Seiri Datos** folder next to it; the app tells you in the sidebar when a newer version is out.
 
 > Windows may show a SmartScreen warning because the app is not code-signed. Choose *More info → Run anyway*.
+
+### On your phone
+
+Open **https://lunara02.github.io/Seiri/** in your phone's browser and choose *Add to home screen* (Android Chrome: *Install app*; iPhone Safari: *Share → Add to Home Screen*). It works offline once opened and keeps your data on that phone. Reading mudae.net (character galleries and the Photos tab) only works in the desktop app. Your collection is not shared between devices: use *Save full copy* / *Load full copy* in the ⋮ menu to move it.
 
 ## Getting started
 
@@ -27,6 +31,7 @@ Get **Seiri-Portable-6.1.0.exe** from the [latest release](../../releases/latest
 - Character images straight from mudae.net after linking your account.
 - Ready-to-paste sorting commands, and saved positions you can restore.
 - Photos tab: see which photos of your characters match each other (all the characters of a set together) and browse photos by tag, with what each tag means.
+- Timers on Home for claim, rolls, `$daily`, `$dk` and vote, with optional notifications; quick-copy commands (`$im`, `$wish`, `$like`…) in each character card.
 - Several profiles, for different servers or accounts.
 - Export your list or a web view to share with friends; import theirs (read only).
 - English and Spanish, dark and light themes, optional visual effects.
@@ -47,9 +52,13 @@ Aplicación de escritorio (Windows, portable) para ordenar tu harem de [Mudae](h
 
 ### Descarga
 
-Descarga **Seiri-Portable-6.1.0.exe** desde la [última versión](../../releases/latest). No hay instalador: ponlo en su propia carpeta y ejecútalo. Para actualizar, reemplaza el exe y deja junto a él tu carpeta **Seiri Datos**; la app avisa en la barra lateral cuando hay una versión nueva.
+Descarga **Seiri-Portable-6.2.0.exe** desde la [última versión](../../releases/latest). No hay instalador: ponlo en su propia carpeta y ejecútalo. Para actualizar, reemplaza el exe y deja junto a él tu carpeta **Seiri Datos**; la app avisa en la barra lateral cuando hay una versión nueva.
 
 > Windows puede mostrar un aviso de SmartScreen porque la app no está firmada. Elige *Más información → Ejecutar de todas formas*.
+
+#### En el móvil
+
+Abre **https://lunara02.github.io/Seiri/** en el navegador del teléfono y elige *Añadir a pantalla de inicio* (Android Chrome: *Instalar app*; iPhone Safari: *Compartir → Añadir a pantalla de inicio*). Funciona sin conexión una vez abierta y guarda tus datos en ese teléfono. Leer mudae.net (galerías de imágenes y pestaña Fotos) solo funciona en la app de escritorio. Tu colección no se comparte entre dispositivos: usa *Guardar copia completa* / *Cargar copia completa* en el menú ⋮ para pasarla.
 
 ### Primeros pasos
 
@@ -68,6 +77,7 @@ Descarga **Seiri-Portable-6.1.0.exe** desde la [última versión](../../releases
 - Imágenes de cada personaje directamente desde mudae.net tras vincular tu cuenta.
 - Comandos de orden listos para pegar y posiciones guardadas que puedes restaurar.
 - Pestaña Fotos: mira qué fotos de tus personajes combinan entre sí (con todos los personajes de un conjunto juntos) y explora las fotos por etiqueta, con el significado de cada una.
+- Temporizadores en Inicio para reclamo, tiradas, `$daily`, `$dk` y voto, con avisos opcionales; comandos de copia rápida (`$im`, `$wish`, `$like`…) en la ficha de cada personaje.
 - Varios perfiles, para distintos servidores o cuentas.
 - Exporta tu lista o una vista web para compartir con amigos; importa las suyas (solo lectura).
 - Español e inglés, tema oscuro y claro, efectos visuales opcionales.
